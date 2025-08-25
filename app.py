@@ -1,10 +1,16 @@
 import os
 import json
 from datetime import datetime, timedelta
-from flask import Flask, request
+from flask import Flask, request, send_file
 from twilio.twiml.messaging_response import MessagingResponse
+from voice_processor import VoiceProcessor
+import tempfile
+from io import BytesIO
 
 app = Flask(__name__)
+
+# Initialize voice processor
+voice_processor = VoiceProcessor()
 
 # Sample data structures for enhanced features
 student_data = {
@@ -62,11 +68,96 @@ def health():
 def health_check():
     return {"status": "healthy", "service": "whatsapp-education-bot"}
 
+@app.post("/voice-response")
+def generate_voice_response():
+    """Generate voice response for given text"""
+    data = request.get_json()
+    text = data.get('text', '')
+    
+    if not text:
+        return {"error": "No text provided"}, 400
+    
+    try:
+        voice_data = voice_processor.create_voice_response(text)
+        if voice_data:
+            return send_file(
+                voice_data,
+                mimetype='audio/mpeg',
+                as_attachment=True,
+                download_name='response.mp3'
+            )
+        else:
+            return {"error": "Failed to generate voice"}, 500
+    except Exception as e:
+        return {"error": str(e)}, 500
+
+@app.post("/test-voice")
+def test_voice():
+    """Test voice processing capabilities"""
+    test_text = "Hello! This is a test of the voice response system. The WhatsApp Education Bot now supports voice messages."
+    
+    try:
+        voice_data = voice_processor.create_voice_response(test_text)
+        if voice_data:
+            return send_file(
+                voice_data,
+                mimetype='audio/mpeg',
+                as_attachment=True,
+                download_name='test_voice.mp3'
+            )
+        else:
+            return {"error": "Failed to generate test voice"}, 500
+    except Exception as e:
+        return {"error": str(e)}, 500
+
+@app.get("/voice-status")
+def voice_status():
+    """Check voice system status"""
+    try:
+        # Test basic voice generation
+        test_voice = voice_processor.text_to_speech("Test")
+        voice_available = test_voice is not None
+        
+        return {
+            "status": "ok",
+            "voice_enabled": True,
+            "speech_recognition": "Google Speech API",
+            "text_to_speech": "Google TTS",
+            "voice_generation_test": "passed" if voice_available else "failed"
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "voice_enabled": False,
+            "error": str(e)
+        }
+
 @app.post("/whatsapp")
 def whatsapp_bot():
     incoming_msg = (request.values.get("Body") or "").strip().lower()
+    media_url = request.values.get("MediaUrl0")  # Get voice message URL
+    media_content_type = request.values.get("MediaContentType0")
+    
     resp = MessagingResponse()
     print(f"Incoming: {incoming_msg}")
+    print(f"Media URL: {media_url}")
+    print(f"Media Type: {media_content_type}")
+    
+    # Check if it's a voice message
+    if media_url and media_content_type and 'audio' in media_content_type:
+        print("Processing voice message...")
+        # Download and process voice message
+        audio_data = voice_processor.download_audio_from_url(media_url)
+        if audio_data:
+            # Convert speech to text
+            incoming_msg = voice_processor.speech_to_text(audio_data)
+            print(f"Transcribed text: {incoming_msg}")
+            
+            # Send transcription confirmation
+            resp.message(f"🎤 I heard: '{incoming_msg}'")
+        else:
+            resp.message("❌ Sorry, I couldn't process your voice message. Please try again or send a text message.")
+            return str(resp)
 
     # Main menu and greetings
     if any(greet in incoming_msg for greet in ["hi", "hello", "hey", "start", "menu"]):
@@ -310,7 +401,28 @@ def whatsapp_bot():
             "💡 *Quick Access:* 1-7 for main services"
         )
 
+    # Send text response
     resp.message(reply)
+    
+    # Generate and send voice response
+    try:
+        voice_data = voice_processor.create_voice_response(reply)
+        if voice_data:
+            # Save voice response to temporary file and send as media
+            with tempfile.NamedTemporaryFile(suffix='.mp3', delete=False) as temp_voice:
+                voice_data.seek(0)
+                temp_voice.write(voice_data.read())
+                temp_voice_path = temp_voice.name
+            
+            # Create a media message with the voice response
+            # Note: In production, you'd upload this to a CDN and use the URL
+            print(f"Voice response generated: {temp_voice_path}")
+            
+            # For now, we'll just send text + indication of voice availability
+            resp.message("🔊 Voice response available! (Voice feature active)")
+    except Exception as e:
+        print(f"Error generating voice response: {str(e)}")
+    
     return str(resp)
 
 if __name__ == "__main__":

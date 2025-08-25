@@ -1,0 +1,75 @@
+{
+  "voice_commands": {
+    "greetings": [
+      "hello",
+      "hi",
+      "hey",
+      "good morning",
+      "good afternoon",
+      "good evening"
+    ],
+    "menu": [
+      "menu",
+      "main menu",
+      "options",
+      "help",
+      "what can you do"
+    ],
+    "fees": [
+      "fees",
+      "fee",
+      "payment",
+      "pay",
+      "money",
+      "cost"
+    ],
+    "exams": [
+      "exam",
+      "exams",
+      "test",
+      "examination",
+      "schedule"
+    ],
+    "admissions": [
+      "admission",
+      "admissions",
+      "apply",
+      "application",
+      "enrollment"
+    ],
+    "attendance": [
+      "attendance",
+      "performance",
+      "progress",
+      "grades",
+      "marks"
+    ],
+    "parent": [
+      "parent",
+      "teacher",
+      "meeting",
+      "homework",
+      "assignments"
+    ],
+    "learning": [
+      "learning",
+      "study",
+      "quiz",
+      "question",
+      "doubt",
+      "module"
+    ]
+  },
+  "voice_responses": {
+    "welcome": "Welcome to EduBot! I can help you with student services through voice commands. You can ask about fees, exams, admissions, attendance, parent communication, or learning support.",
+    "menu_audio": "Here are the main services: One - Student Support and FAQs. Two - Admissions and Enrollment. Three - Attendance and Performance. Four - Exams and Assessments. Five - Fee Management. Six - Parent Teacher Communication. Seven - Learning and EdTech Support.",
+    "confirmation": "I understand you said: ",
+    "error": "I'm sorry, I didn't understand that clearly. Please try speaking again or send a text message.",
+    "processing": "Processing your voice message, please wait..."
+  },
+  "tts_settings": {
+    "language": "en",
+    "slow": false,
+    "voice_speed": 1.0
+  }
+}

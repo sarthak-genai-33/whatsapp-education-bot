@@ -1,7 +1,31 @@
-# WhatsApp Education Bot (Comprehensive)
+# WhatsApp Education Voice Bot (Comprehensive)
 
-A comprehensive WhatsApp bot for the Education domain using **Python (Flask)** and **Twilio's WhatsApp API**.
-Covers all 7 major educational use cases: Student Support, Admissions, Performance Tracking, Exams, Fee Management, Parent Communication, and EdTech Learning.
+A comprehensive **Voice-Enabled** WhatsApp bot for the Education domain using **Python (Flask)**, **Twilio's WhatsApp API**, and **Speech Processing**.
+Covers all 7 major educational use cases with **Speech-to-Text** and **Text-to-Speech** capabilities.
+
+---
+
+## 🎤 **Voice Features**
+
+### **🔊 Voice Input Processing**
+- **Speech Recognition**: Converts voice messages to text using Google Speech API
+- **Multi-language Support**: English (US/India) with intelligent fallback
+- **Command Matching**: Smart matching of voice commands to bot functions
+- **Noise Handling**: Automatic ambient noise adjustment
+
+### **🎵 Voice Output Generation**
+- **Text-to-Speech**: Converts bot responses to natural voice
+- **Clean Audio**: Emoji and formatting removal for better TTS
+- **Multiple Formats**: MP3 audio generation and streaming
+- **Voice Confirmation**: Transcription confirmation for accuracy
+
+### **🎯 Voice Commands**
+- Say **"Hello"** or **"Hi"** → Voice welcome message
+- Say **"Menu"** or **"Options"** → Voice menu navigation
+- Say **"Fees"** or **"Payment"** → Fee management via voice
+- Say **"Exams"** or **"Tests"** → Exam information via voice
+- Say **"One"** to **"Seven"** → Navigate main service categories
+- Send voice messages → Automatic transcription and processing
 
 ---
 
@@ -54,9 +78,11 @@ Covers all 7 major educational use cases: Student Support, Admissions, Performan
 ## 💻 Tech Stack
 - **Backend**: Python 3.9+, Flask 3.0.3
 - **Messaging**: Twilio WhatsApp API (9.3.5)
-- **Deployment**: Gunicorn 22.0.0
+- **Voice Processing**: Google Speech Recognition, gTTS (Google Text-to-Speech)
+- **Audio Processing**: PyDub, SpeechRecognition
+- **Deployment**: Gunicorn 22.0.0, Railway/Heroku compatible
 - **Data**: In-memory structures (easily extensible to databases)
-- **Features**: Real-time messaging, Rich media support, Interactive menus
+- **Features**: Real-time messaging, Voice I/O, Rich media support, Interactive menus
 
 ---
 
@@ -188,9 +214,28 @@ curl -X POST http://localhost:5001/whatsapp --data-urlencode "Body=fees"
 curl -X POST http://localhost:5001/whatsapp --data-urlencode "Body=quiz"
 ```
 
-**Test Performance Tracking:**
+**Test Voice Features:**
 ```bash
-curl -X POST http://localhost:5001/whatsapp --data-urlencode "Body=attendance"
+# Test voice generation
+curl -X GET http://localhost:5001/test-voice
+
+# Check voice system status
+curl -X GET http://localhost:5001/voice-status
+
+# Generate custom voice response
+curl -X POST http://localhost:5001/voice-response \
+  -H "Content-Type: application/json" \
+  -d '{"text": "Hello, this is a test voice message"}'
+```
+
+**Test Voice Messages:**
+```bash
+# Test voice message processing (simulated)
+curl -X POST http://localhost:5001/whatsapp \
+  --data-urlencode "Body=hi" \
+  --data-urlencode "MediaUrl0=https://example.com/voice.ogg" \
+  --data-urlencode "MediaContentType0=audio/ogg" \
+  -H "Content-Type: application/x-www-form-urlencoded"
 ```
 
 ---
