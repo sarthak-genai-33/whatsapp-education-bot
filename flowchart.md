@@ -1,6 +1,6 @@
-# WhatsApp Education Bot - System Flowchart
+# WhatsApp Student Support Bot - System Flowcharts
 
-## Complete User Interaction Flow
+## User Interaction Flow
 
 ```mermaid
 flowchart TD
@@ -9,95 +9,65 @@ flowchart TD
     B --> C[Convert to lowercase & trim]
     C --> D{Is greeting?}
     
-    D -->|Yes: hi, hello, hey| E[Show Main Menu]
+    D -->|Yes: hi, hello, hey| E[Show Student Support Menu]
     D -->|No| F{Check message content}
     
-    E --> G[Display 7 Service Categories]
+    E --> G[Display Core Capabilities]
     G --> H[Wait for user selection]
     
-    F -->|1 or 'student'| I[Student Support & FAQs]
-    F -->|2 or 'admissions'| J[Admissions & Enrollment]
-    F -->|3 or 'attendance'| K[Attendance & Performance]
-    F -->|4 or 'exams'| L[Exams & Assessments]
-    F -->|5 or 'fees'| M[Fee Management]
-    F -->|6 or 'parent'| N[Parent-Teacher Communication]
-    F -->|7 or 'learning'| O[EdTech & Learning Support]
-    F -->|Unknown| P[Fallback Message]
+    F -->|FAQ keywords| I[FAQ Categories]
+    F -->|resources, materials| J[Academic Resources]
+    F -->|updates, personal| K[Personalized Updates]
+    F -->|contact, help| L[Support Contact]
+    F -->|Quick shortcuts| M[Direct Responses]
+    F -->|Unknown| N[Fallback Message]
     
-    I --> I1{Sub-option?}
-    I1 -->|library| I2[Library Hours & Info]
-    I1 -->|hostel| I3[Accommodation Details]
-    I1 -->|transport| I4[Bus Routes & Timings]
-    I1 -->|placement| I5[Career & Placement Info]
-    I1 -->|syllabus| I6[Course Materials]
-    I1 -->|notes| I7[Study Resources]
+    I --> I1{Which FAQ?}
+    I1 -->|courses| I2[Course Information]
+    I1 -->|fees| I3[Fee Structure]
+    I1 -->|admission| I4[Admission Process]
+    I1 -->|results| I5[Results Info]
+    I1 -->|schedule| I6[Academic Schedule]
+    I1 -->|library| I7[Library Services]
+    I1 -->|hostel| I8[Hostel Facilities]
+    I1 -->|transport| I9[Transport Services]
     
-    J --> J1{Sub-option?}
-    J1 -->|mba/bca/bba| J2[Program Details]
-    J1 -->|brochure| J3[Send Brochure]
-    J1 -->|status| J4[Application Status]
+    J --> J1{Which Resource?}
+    J1 -->|syllabus| J2[Course Syllabus]
+    J1 -->|notes| J3[Study Notes]
+    J1 -->|lectures| J4[Video Lectures]
+    J1 -->|ebooks| J5[Digital Books]
     
-    K --> K1{Sub-option?}
-    K1 -->|absent| K2[Report Absence]
-    K1 -->|report| K3[Progress Report]
-    K1 -->|tips| K4[Improvement Tips]
+    K --> K1{Which Update?}
+    K1 -->|timetable| K2[Exam Timetable]
+    K1 -->|reminders| K3[Class Reminders]
+    K1 -->|assignments| K4[Assignment Deadlines]
     
-    L --> L1{Sub-option?}
-    L1 -->|register| L2[Exam Registration]
-    L1 -->|results| L3[Check Results]
-    L1 -->|reminder| L4[Set Reminders]
+    I2 --> O[Generate Text Response]
+    I3 --> O
+    I4 --> O
+    I5 --> O
+    I6 --> O
+    I7 --> O
+    I8 --> O
+    I9 --> O
+    J2 --> O
+    J3 --> O
+    J4 --> O
+    J5 --> O
+    K2 --> O
+    K3 --> O
+    K4 --> O
+    L --> O
+    M --> O
+    N --> O
     
-    M --> M1{Sub-option?}
-    M1 -->|paynow| M2[Online Payment]
-    M1 -->|installment| M3[EMI Options]
-    M1 -->|receipt| M4[Payment History]
-    M1 -->|breakdown| M5[Fee Structure]
+    O --> P[Create TwiML Response]
+    P --> Q[Send to Twilio]
+    Q --> R[Deliver to User via WhatsApp]
     
-    N --> N1{Sub-option?}
-    N1 -->|ptm| N2[PTM Details]
-    N1 -->|homework| N3[Assignments]
-    N1 -->|feedback| N4[Share Feedback]
-    
-    O --> O1{Sub-option?}
-    O1 -->|module| O2[Learning Module]
-    O1 -->|quiz| O3[Interactive Quiz]
-    O1 -->|doubt| O4[AI Q&A]
-    O1 -->|videos| O5[Video Library]
-    
-    I2 --> Q[Generate Text Response]
-    I3 --> Q
-    I4 --> Q
-    I5 --> Q
-    I6 --> Q
-    I7 --> Q
-    J2 --> Q
-    J3 --> Q
-    J4 --> Q
-    K2 --> Q
-    K3 --> Q
-    K4 --> Q
-    L2 --> Q
-    L3 --> Q
-    L4 --> Q
-    M2 --> Q
-    M3 --> Q
-    M4 --> Q
-    M5 --> Q
-    N2 --> Q
-    N3 --> Q
-    N4 --> Q
-    O2 --> Q
-    O3 --> Q
-    O4 --> Q
-    O5 --> Q
-    P --> Q
-    
-    Q --> R[Create TwiML Response]
-    R --> S[Send to Twilio]
-    S --> T[Deliver to User via WhatsApp]
-    
-    T --> U[Wait for next message]
-    U --> A
+    R --> S[Wait for next message]
+    S --> A
 ```
 
 ## System Architecture Flow
@@ -108,17 +78,49 @@ flowchart LR
     B -->|Webhook POST| C[Flask Application]
     
     C --> D[Message Processor]
-    D --> E[Text Handler]
+    D --> E[Student Support Handler]
     
-    E --> F[Command Matcher]
-    F --> G[Response Generator]
+    E --> F[Keyword Matcher]
+    F --> G{Message Type}
     
-    G --> H[Text Response]
-    H --> I[TwiML Response]
+    G -->|FAQ Query| H[FAQ Data Lookup]
+    G -->|Resource Request| I[Academic Resources]
+    G -->|Update Request| J[Student Updates]
+    G -->|Support Request| K[Contact Information]
     
-    I --> J[Twilio API]
-    J --> K[WhatsApp Delivery]
-    K --> A
+    H --> L[Response Generator]
+    I --> L
+    J --> L
+    K --> L
+    
+    L --> M[TwiML Response]
+    M --> N[Twilio API]
+    N --> O[WhatsApp Delivery]
+    O --> A
+```
+
+## Data Structure Flow
+
+```mermaid
+flowchart TB
+    A[User Input] --> B[Flask App]
+    
+    B --> C{Data Category}
+    
+    C -->|FAQ| D[FAQ Data Store]
+    C -->|Resources| E[Academic Resources Store]
+    C -->|Updates| F[Student Updates Store]
+    
+    D --> G[FAQ Response]
+    E --> H[Resource Links]
+    F --> I[Personalized Info]
+    
+    G --> J[Formatted Response]
+    H --> J
+    I --> J
+    
+    J --> K[TwiML Generation]
+    K --> L[WhatsApp Delivery]
 ```
 
 ## Deployment Flow
@@ -126,21 +128,18 @@ flowchart LR
 ```mermaid
 flowchart TD
     A[Developer] -->|git push| B[GitHub Repository]
-    B --> C{Branch?}
+    B --> C[Railway Deployment]
     
-    C -->|main| D[Railway Deployment]
-    C -->|voice-bot-feature| E[Feature Branch]
+    C --> D[Build Process]
+    D --> E[Install Dependencies]
+    E --> F[Start Gunicorn Server]
+    F --> G[Student Support Bot]
     
-    D --> F[Build Process]
-    F --> G[Install Dependencies]
-    G --> H[Start Gunicorn Server]
-    H --> I[Production App]
+    G --> H[Health Endpoints]
+    G --> I[WhatsApp Webhook]
     
-    I --> J[Health Endpoints]
-    I --> K[WhatsApp Webhook]
-    
-    E --> L[Pull Request]
-    L --> M[Code Review]
-    M --> N[Merge to Main]
-    N --> D
+    I --> J[Student Queries]
+    J --> K[FAQ Responses]
+    J --> L[Resource Links]
+    J --> M[Update Notifications]
 ```
