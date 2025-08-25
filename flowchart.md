@@ -4,152 +4,121 @@
 
 ```mermaid
 flowchart TD
-    A[User sends message to WhatsApp] --> B{Message Type?}
+    A[User sends text message to WhatsApp] --> B[Extract message body]
     
-    B -->|Text Message| C[Extract message body]
-    B -->|Voice Message| D[Download audio file]
+    B --> C[Convert to lowercase & trim]
+    C --> D{Is greeting?}
     
-    D --> E[Speech-to-Text conversion]
-    E --> F[Process transcribed text]
-    F --> C
+    D -->|Yes: hi, hello, hey| E[Show Main Menu]
+    D -->|No| F{Check message content}
     
-    C --> G[Convert to lowercase & trim]
-    G --> H{Is greeting?}
+    E --> G[Display 7 Service Categories]
+    G --> H[Wait for user selection]
     
-    H -->|Yes: hi, hello, hey| I[Show Main Menu]
-    H -->|No| J{Check message content}
+    F -->|1 or 'student'| I[Student Support & FAQs]
+    F -->|2 or 'admissions'| J[Admissions & Enrollment]
+    F -->|3 or 'attendance'| K[Attendance & Performance]
+    F -->|4 or 'exams'| L[Exams & Assessments]
+    F -->|5 or 'fees'| M[Fee Management]
+    F -->|6 or 'parent'| N[Parent-Teacher Communication]
+    F -->|7 or 'learning'| O[EdTech & Learning Support]
+    F -->|Unknown| P[Fallback Message]
     
-    I --> K[Display 7 Service Categories]
-    K --> L[Wait for user selection]
+    I --> I1{Sub-option?}
+    I1 -->|library| I2[Library Hours & Info]
+    I1 -->|hostel| I3[Accommodation Details]
+    I1 -->|transport| I4[Bus Routes & Timings]
+    I1 -->|placement| I5[Career & Placement Info]
+    I1 -->|syllabus| I6[Course Materials]
+    I1 -->|notes| I7[Study Resources]
     
-    J -->|1 or 'student'| M[Student Support & FAQs]
-    J -->|2 or 'admissions'| N[Admissions & Enrollment]
-    J -->|3 or 'attendance'| O[Attendance & Performance]
-    J -->|4 or 'exams'| P[Exams & Assessments]
-    J -->|5 or 'fees'| Q[Fee Management]
-    J -->|6 or 'parent'| R[Parent-Teacher Communication]
-    J -->|7 or 'learning'| S[EdTech & Learning Support]
-    J -->|Unknown| T[Fallback Message]
+    J --> J1{Sub-option?}
+    J1 -->|mba/bca/bba| J2[Program Details]
+    J1 -->|brochure| J3[Send Brochure]
+    J1 -->|status| J4[Application Status]
+    
+    K --> K1{Sub-option?}
+    K1 -->|absent| K2[Report Absence]
+    K1 -->|report| K3[Progress Report]
+    K1 -->|tips| K4[Improvement Tips]
+    
+    L --> L1{Sub-option?}
+    L1 -->|register| L2[Exam Registration]
+    L1 -->|results| L3[Check Results]
+    L1 -->|reminder| L4[Set Reminders]
     
     M --> M1{Sub-option?}
-    M1 -->|library| M2[Library Hours & Info]
-    M1 -->|hostel| M3[Accommodation Details]
-    M1 -->|transport| M4[Bus Routes & Timings]
-    M1 -->|placement| M5[Career & Placement Info]
-    M1 -->|syllabus| M6[Course Materials]
-    M1 -->|notes| M7[Study Resources]
+    M1 -->|paynow| M2[Online Payment]
+    M1 -->|installment| M3[EMI Options]
+    M1 -->|receipt| M4[Payment History]
+    M1 -->|breakdown| M5[Fee Structure]
     
     N --> N1{Sub-option?}
-    N1 -->|mba/bca/bba| N2[Program Details]
-    N1 -->|brochure| N3[Send Brochure]
-    N1 -->|status| N4[Application Status]
+    N1 -->|ptm| N2[PTM Details]
+    N1 -->|homework| N3[Assignments]
+    N1 -->|feedback| N4[Share Feedback]
     
     O --> O1{Sub-option?}
-    O1 -->|absent| O2[Report Absence]
-    O1 -->|report| O3[Progress Report]
-    O1 -->|tips| O4[Improvement Tips]
+    O1 -->|module| O2[Learning Module]
+    O1 -->|quiz| O3[Interactive Quiz]
+    O1 -->|doubt| O4[AI Q&A]
+    O1 -->|videos| O5[Video Library]
     
-    P --> P1{Sub-option?}
-    P1 -->|register| P2[Exam Registration]
-    P1 -->|results| P3[Check Results]
-    P1 -->|reminder| P4[Set Reminders]
+    I2 --> Q[Generate Text Response]
+    I3 --> Q
+    I4 --> Q
+    I5 --> Q
+    I6 --> Q
+    I7 --> Q
+    J2 --> Q
+    J3 --> Q
+    J4 --> Q
+    K2 --> Q
+    K3 --> Q
+    K4 --> Q
+    L2 --> Q
+    L3 --> Q
+    L4 --> Q
+    M2 --> Q
+    M3 --> Q
+    M4 --> Q
+    M5 --> Q
+    N2 --> Q
+    N3 --> Q
+    N4 --> Q
+    O2 --> Q
+    O3 --> Q
+    O4 --> Q
+    O5 --> Q
+    P --> Q
     
-    Q --> Q1{Sub-option?}
-    Q1 -->|paynow| Q2[Online Payment]
-    Q1 -->|installment| Q3[EMI Options]
-    Q1 -->|receipt| Q4[Payment History]
-    Q1 -->|breakdown| Q5[Fee Structure]
+    Q --> R[Create TwiML Response]
+    R --> S[Send to Twilio]
+    S --> T[Deliver to User via WhatsApp]
     
-    R --> R1{Sub-option?}
-    R1 -->|ptm| R2[PTM Details]
-    R1 -->|homework| R3[Assignments]
-    R1 -->|feedback| R4[Share Feedback]
-    
-    S --> S1{Sub-option?}
-    S1 -->|module| S2[Learning Module]
-    S1 -->|quiz| S3[Interactive Quiz]
-    S1 -->|doubt| S4[AI Q&A]
-    S1 -->|videos| S5[Video Library]
-    
-    M2 --> U[Generate Text Response]
-    M3 --> U
-    M4 --> U
-    M5 --> U
-    M6 --> U
-    M7 --> U
-    N2 --> U
-    N3 --> U
-    N4 --> U
-    O2 --> U
-    O3 --> U
-    O4 --> U
-    P2 --> U
-    P3 --> U
-    P4 --> U
-    Q2 --> U
-    Q3 --> U
-    Q4 --> U
-    Q5 --> U
-    R2 --> U
-    R3 --> U
-    R4 --> U
-    S2 --> U
-    S3 --> U
-    S4 --> U
-    S5 --> U
-    T --> U
-    
-    U --> V{Voice Enabled?}
-    V -->|Yes| W[Generate Voice Response]
-    V -->|No| X[Send Text Response]
-    
-    W --> Y[Clean text for TTS]
-    Y --> Z[Convert to Speech]
-    Z --> AA[Send Voice + Text]
-    
-    X --> BB[Create TwiML Response]
-    AA --> BB
-    
-    BB --> CC[Send to Twilio]
-    CC --> DD[Deliver to User via WhatsApp]
-    
-    DD --> EE[Wait for next message]
-    EE --> A
+    T --> U[Wait for next message]
+    U --> A
 ```
 
 ## System Architecture Flow
 
 ```mermaid
 flowchart LR
-    A[WhatsApp User] -->|Sends Message| B[Twilio WhatsApp API]
+    A[WhatsApp User] -->|Sends Text Message| B[Twilio WhatsApp API]
     B -->|Webhook POST| C[Flask Application]
     
     C --> D[Message Processor]
-    D --> E{Message Type}
+    D --> E[Text Handler]
     
-    E -->|Text| F[Text Handler]
-    E -->|Voice| G[Voice Processor]
+    E --> F[Command Matcher]
+    F --> G[Response Generator]
     
-    G --> H[Speech Recognition]
-    H --> I[Google Speech API]
-    I --> J[Transcribed Text]
-    J --> F
+    G --> H[Text Response]
+    H --> I[TwiML Response]
     
-    F --> K[Command Matcher]
-    K --> L[Response Generator]
-    
-    L --> M{Voice Response?}
-    M -->|Yes| N[Text-to-Speech]
-    M -->|No| O[Text Response]
-    
-    N --> P[Google TTS API]
-    P --> Q[Audio Generation]
-    Q --> R[TwiML Response]
-    
-    O --> R
-    R --> S[Twilio API]
-    S --> T[WhatsApp Delivery]
-    T --> A
+    I --> J[Twilio API]
+    J --> K[WhatsApp Delivery]
+    K --> A
 ```
 
 ## Deployment Flow
@@ -169,10 +138,9 @@ flowchart TD
     
     I --> J[Health Endpoints]
     I --> K[WhatsApp Webhook]
-    I --> L[Voice API Endpoints]
     
-    E --> M[Pull Request]
-    M --> N[Code Review]
-    N --> O[Merge to Main]
-    O --> D
+    E --> L[Pull Request]
+    L --> M[Code Review]
+    M --> N[Merge to Main]
+    N --> D
 ```
