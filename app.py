@@ -56,13 +56,16 @@ def get_main_menu():
 
 @app.get("/")
 def health():
-    return {"status": "ok", "service": "whatsapp-education-bot"}
+    return {"status": "ok", "service": "whatsapp-education-bot", "version": "2.0"}
+
+@app.get("/health")
+def health_check():
+    return {"status": "healthy", "service": "whatsapp-education-bot"}
 
 @app.post("/whatsapp")
 def whatsapp_bot():
     incoming_msg = (request.values.get("Body") or "").strip().lower()
     resp = MessagingResponse()
-    msg = resp.message()
     print(f"Incoming: {incoming_msg}")
 
     # Main menu and greetings
