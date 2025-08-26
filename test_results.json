@@ -1,0 +1,20 @@
+{
+  "timestamp": "2025-08-26T03:14:25Z",
+  "n8n": {
+    "url": "https://06945024e292.ngrok-free.app/webhook/n8n-whatsapp-webhook",
+    "passed": 2,
+    "total": 11,
+    "status": "PARTIAL"
+  },
+  "flask": {
+    "url": "http://localhost:5001/whatsapp",
+    "passed": 11,
+    "total": 11,
+    "status": "READY"
+  },
+  "services": {
+    "n8n_running": true,
+    "flask_running": true,
+    "ngrok_active": true
+  }
+}

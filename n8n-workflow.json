@@ -1,0 +1,503 @@
+{
+  "name": "WhatsApp Education Bot Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "n8n-whatsapp-webhook",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "WhatsApp Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "greeting-condition",
+              "leftValue": "={{ $json.Body?.toLowerCase() }}",
+              "rightValue": "hi,hello,hey,start,menu",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "message-router",
+      "name": "Message Router",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        460,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "faq-condition",
+              "leftValue": "={{ $json.Body?.toLowerCase() }}",
+              "rightValue": "courses,fees,admission,results,schedule,library,hostel,transport",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "faq-checker",
+      "name": "FAQ Checker",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        680,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "resources-condition",
+              "leftValue": "={{ $json.Body?.toLowerCase() }}",
+              "rightValue": "resources,materials,study,syllabus,notes,lectures,ebooks",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "resources-checker",
+      "name": "Resources Checker",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        680,
+        600
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Main Menu Response\nconst mainMenu = `🎓 Welcome to Student Support Bot!\nYour one-stop solution for academic information.\n\n📚 *What can I help you with?*\n\n🔹 *FAQs:* courses, fees, admission, results, schedule\n🔹 *Resources:* syllabus, notes, lectures, ebooks\n🔹 *Updates:* timetable, reminders, assignments\n🔹 *Facilities:* library, hostel, transport\n\n💡 *Quick Commands:*\n• Type any keyword (e.g., 'courses', 'fees', 'notes')\n• Type 'resources' for academic materials\n• Type 'updates' for personalized information\n• Type 'help' for support\n• Type 'menu' to see this again`;\n\nreturn [{\n  json: {\n    message: mainMenu,\n    messageType: 'menu',\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "main-menu-generator",
+      "name": "Main Menu Generator",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        680,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// FAQ Response Generator\nconst message = $input.first().json.Body?.toLowerCase();\n\nconst faqData = {\n  \"courses\": \"📚 *Available Courses:*\\n• MBA (2 years) - Management Studies\\n• BCA (3 years) - Computer Applications\\n• BBA (3 years) - Business Administration\\n• M.Tech (2 years) - Engineering Specializations\\n📧 Details: courses@example.com\",\n  \"fees\": \"💰 *Fee Structure:*\\n• MBA: ₹2,50,000 per year\\n• BCA: ₹80,000 per year\\n• BBA: ₹90,000 per year\\n• M.Tech: ₹1,20,000 per year\\n📧 Finance office: fees@example.com\",\n  \"admission\": \"🎓 *Admission Process:*\\n• Application: Online portal\\n• Entrance Test: Subject-specific\\n• Interview: Final selection\\n• Documents: Academic transcripts required\\n📧 Admissions: admissions@example.com\",\n  \"results\": \"📊 *Results Information:*\\n• Semester results: Published online\\n• Grade sheets: Available for download\\n• Transcripts: Apply through student portal\\n📧 Academics: results@example.com\",\n  \"schedule\": \"📅 *Academic Schedule:*\\n• Classes: 9 AM - 4 PM (Mon-Fri)\\n• Exams: End of each semester\\n• Holidays: As per academic calendar\\n📧 Schedule queries: schedule@example.com\",\n  \"library\": \"📚 *Library Services:*\\n• Hours: Mon-Fri 8AM-8PM, Sat 9AM-5PM\\n• Books: 50,000+ collection\\n• Digital resources: E-books & journals\\n📧 Library: library@example.com\",\n  \"hostel\": \"🏠 *Hostel Facilities:*\\n• AC/Non-AC rooms available\\n• Mess facility included\\n• Wi-Fi & study rooms\\n📧 Hostel: hostel@example.com\",\n  \"transport\": \"🚌 *Transport Services:*\\n• College bus from major locations\\n• Route timings: 7 AM - 6 PM\\n• Monthly pass available\\n📧 Transport: transport@example.com\"\n};\n\nlet response = \"\";\nfor (const [key, value] of Object.entries(faqData)) {\n  if (message.includes(key)) {\n    response = value;\n    break;\n  }\n}\n\nif (!response) {\n  response = \"🤔 I didn't find specific FAQ information for that query. Type 'menu' for available options.\";\n}\n\nreturn [{\n  json: {\n    message: response,\n    messageType: 'faq',\n    category: message,\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "faq-generator",
+      "name": "FAQ Generator",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        900,
+        350
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Academic Resources Response Generator\nconst message = $input.first().json.Body?.toLowerCase();\n\nconst academicResources = {\n  \"syllabus\": \"📖 *Syllabus & Course Materials:*\\n• Complete syllabus for all courses\\n• Unit-wise breakdown available\\n• Learning objectives included\\n🔗 Download: https://example.com/syllabus\",\n  \"notes\": \"📝 *Study Notes:*\\n• Chapter-wise notes\\n• Faculty-prepared materials\\n• Previous year papers\\n🔗 Access: https://example.com/notes\",\n  \"lectures\": \"🎥 *Recorded Lectures:*\\n• Video lectures by faculty\\n• Subject-wise categorization\\n• HD quality recordings\\n🔗 Portal: https://example.com/lectures\",\n  \"ebooks\": \"📱 *E-Books & Resources:*\\n• Digital library access\\n• Reference books\\n• Research journals\\n🔗 Library: https://example.com/ebooks\"\n};\n\nlet response = \"\";\n\n// Check if specific resource is requested\nfor (const [key, value] of Object.entries(academicResources)) {\n  if (message.includes(key)) {\n    response = value;\n    break;\n  }\n}\n\n// If no specific resource, show general resources menu\nif (!response && (message.includes('resources') || message.includes('materials') || message.includes('study'))) {\n  response = \"📚 *Academic Resources*\\n\\nWhat type of resource do you need?\\n\\n🔹 Type 'syllabus' - Course syllabus & materials\\n🔹 Type 'notes' - Study notes & papers\\n🔹 Type 'lectures' - Recorded video lectures\\n🔹 Type 'ebooks' - Digital books & journals\\n\\n💡 Or directly type the resource name!\";\n}\n\nif (!response) {\n  response = \"🤔 I didn't find specific resource information. Type 'resources' to see available academic materials.\";\n}\n\nreturn [{\n  json: {\n    message: response,\n    messageType: 'resources',\n    category: message,\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "resources-generator",
+      "name": "Resources Generator",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        900,
+        550
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "updates-condition",
+              "leftValue": "={{ $json.Body?.toLowerCase() }}",
+              "rightValue": "updates,personal,my,timetable,reminders,assignments",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "updates-checker",
+      "name": "Updates Checker",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        680,
+        800
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Personalized Updates Generator\nconst message = $input.first().json.Body?.toLowerCase();\n\nconst studentUpdates = {\n  \"timetable\": \"📅 *This Week's Exam Timetable:*\\n• Monday: Mathematics (9 AM - 12 PM)\\n• Wednesday: Science (2 PM - 5 PM)\\n• Friday: English (10 AM - 1 PM)\\n📍 Venue: Main Examination Hall\",\n  \"reminders\": \"🔔 *Class Reminders:*\\n• Tomorrow: Advanced Programming Lab\\n• Thursday: Marketing Strategy Seminar\\n• Friday: Project Submission Deadline\\n⏰ Don't forget to attend!\",\n  \"assignments\": \"📋 *Assignment Deadlines:*\\n• Data Structures Assignment: 25th Aug\\n• Marketing Case Study: 28th Aug\\n• Research Paper: 30th Aug\\n📧 Submit via student portal\"\n};\n\nlet response = \"\";\n\n// Check if specific update is requested\nfor (const [key, value] of Object.entries(studentUpdates)) {\n  if (message.includes(key)) {\n    response = value;\n    break;\n  }\n}\n\n// If no specific update, show general updates menu\nif (!response && (message.includes('updates') || message.includes('personal') || message.includes('my'))) {\n  response = \"📅 *Personalized Updates*\\n\\nWhat updates would you like to see?\\n\\n🔹 Type 'timetable' - This week's exam schedule\\n🔹 Type 'reminders' - Class & event reminders\\n🔹 Type 'assignments' - Assignment deadlines\\n\\n💡 Stay updated with your academic schedule!\";\n}\n\nif (!response) {\n  response = \"🤔 I didn't find specific update information. Type 'updates' to see available personalized information.\";\n}\n\nreturn [{\n  json: {\n    message: response,\n    messageType: 'updates',\n    category: message,\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "updates-generator",
+      "name": "Updates Generator",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        900,
+        750
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "support-condition",
+              "leftValue": "={{ $json.Body?.toLowerCase() }}",
+              "rightValue": "contact,support,help,helpline",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "support-checker",
+      "name": "Support Checker",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        680,
+        1000
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Support Contact Generator\nconst supportMessage = `📞 *Student Support Contact*\n\n🎓 *Academic Support:*\n📧 academic-support@example.com\n📞 +91-9876543210\n\n💻 *Technical Support:*\n📧 tech-support@example.com\n📞 +91-9876543211\n\n📚 *Library Support:*\n📧 library@example.com\n📞 +91-9876543212\n\n🕒 *Office Hours:* Mon-Fri 9AM-6PM`;\n\nreturn [{\n  json: {\n    message: supportMessage,\n    messageType: 'support',\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "support-generator",
+      "name": "Support Generator",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        900,
+        950
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Fallback Response Generator\nconst fallbackMessage = `🤔 I didn't quite understand that.\n\n📋 *Try these commands:*\n• Type 'menu' for main options\n• Type 'courses' for course information\n• Type 'fees' for fee structure\n• Type 'resources' for study materials\n• Type 'updates' for personalized info\n• Type 'help' for support\n\n💡 *Quick tip:* Use keywords like 'library', 'hostel', 'notes', etc.`;\n\nreturn [{\n  json: {\n    message: fallbackMessage,\n    messageType: 'fallback',\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "fallback-generator",
+      "name": "Fallback Generator",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        900,
+        1150
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Twilio TwiML Response Generator\nconst message = $json.message || 'Hello from Student Support Bot!';\n\n// Generate TwiML response compatible with Twilio\nconst twimlResponse = `<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<Response>\n  <Message>${message}</Message>\n</Response>`;\n\nreturn [{\n  json: {\n    twimlResponse,\n    message,\n    contentType: 'application/xml',\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "twilio-response-generator",
+      "name": "Twilio TwiML Generator",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        600
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.twimlResponse }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/xml"
+              }
+            ]
+          }
+        }
+      },
+      "id": "webhook-response",
+      "name": "Webhook Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        1560,
+        600
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Message Analytics and Logging\nconst incomingData = $input.first().json;\nconst messageBody = incomingData.Body?.toLowerCase() || '';\nconst fromNumber = incomingData.From || '';\nconst timestamp = new Date().toISOString();\n\n// Determine message category\nlet category = 'unknown';\nif (['hi', 'hello', 'hey', 'start', 'menu'].some(greet => messageBody.includes(greet))) {\n  category = 'greeting';\n} else if (['courses', 'fees', 'admission', 'results', 'schedule', 'library', 'hostel', 'transport'].some(faq => messageBody.includes(faq))) {\n  category = 'faq';\n} else if (['resources', 'materials', 'study', 'syllabus', 'notes', 'lectures', 'ebooks'].some(res => messageBody.includes(res))) {\n  category = 'resources';\n} else if (['updates', 'personal', 'my', 'timetable', 'reminders', 'assignments'].some(upd => messageBody.includes(upd))) {\n  category = 'updates';\n} else if (['contact', 'support', 'help', 'helpline'].some(sup => messageBody.includes(sup))) {\n  category = 'support';\n}\n\n// Log analytics data\nconst analyticsData = {\n  timestamp,\n  fromNumber,\n  messageBody,\n  category,\n  messageLength: messageBody.length,\n  sessionId: `${fromNumber}-${new Date().toDateString()}`\n};\n\nconsole.log('WhatsApp Bot Analytics:', JSON.stringify(analyticsData, null, 2));\n\nreturn [{\n  json: {\n    ...incomingData,\n    analytics: analyticsData\n  }\n}];"
+      },
+      "id": "analytics-logger",
+      "name": "Analytics Logger",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        500
+      ]
+    }
+  ],
+  "connections": {
+    "webhook-trigger": {
+      "main": [
+        [
+          {
+            "node": "analytics-logger",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "message-router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "message-router": {
+      "main": [
+        [
+          {
+            "node": "main-menu-generator",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "faq-checker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "faq-checker": {
+      "main": [
+        [
+          {
+            "node": "faq-generator",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "resources-checker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "resources-checker": {
+      "main": [
+        [
+          {
+            "node": "resources-generator",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "updates-checker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updates-checker": {
+      "main": [
+        [
+          {
+            "node": "updates-generator",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "support-checker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "support-checker": {
+      "main": [
+        [
+          {
+            "node": "support-generator",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "fallback-generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "main-menu-generator": {
+      "main": [
+        [
+          {
+            "node": "twilio-response-generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "faq-generator": {
+      "main": [
+        [
+          {
+            "node": "twilio-response-generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "resources-generator": {
+      "main": [
+        [
+          {
+            "node": "twilio-response-generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "updates-generator": {
+      "main": [
+        [
+          {
+            "node": "twilio-response-generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "support-generator": {
+      "main": [
+        [
+          {
+            "node": "twilio-response-generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "fallback-generator": {
+      "main": [
+        [
+          {
+            "node": "twilio-response-generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "twilio-response-generator": {
+      "main": [
+        [
+          {
+            "node": "webhook-response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2025-08-25T00:00:00.000Z",
+  "versionId": "1"
+}

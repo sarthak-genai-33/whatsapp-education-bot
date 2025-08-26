@@ -13,6 +13,14 @@ Specialized in answering FAQs, providing academic resources, and sharing persona
 - 📚 **Provide instant academic resources** (syllabus, notes, recorded lectures, e-books)
 - 🏠 **Campus facilities info** (library, hostel, transport)
 
+### **🤖 n8n Workflow Integration** (NEW!)
+- 🔄 **Advanced Automation**: Intelligent message routing and processing
+- 📊 **Real-time Analytics**: Message tracking and user interaction analytics
+- ⚡ **Enhanced Response Generation**: Modular and dynamic content generation
+- 📈 **Scalable Architecture**: Support for high-volume message processing
+- 🌐 **Multi-channel Ready**: Foundation for Telegram, Discord, and Slack integration
+- 🔗 **Seamless Integration**: Works alongside existing Flask application
+
 #### **Core Capabilities:**
 
 **📋 FAQ Categories:**
@@ -42,8 +50,10 @@ Specialized in answering FAQs, providing academic resources, and sharing persona
 - **Backend**: Python 3.9+, Flask 3.0.3
 - **Messaging**: Twilio WhatsApp API (9.3.5)
 - **Deployment**: Gunicorn 22.0.0
+- **Automation**: n8n workflow engine (optional)
 - **Data**: In-memory structures (easily extensible to databases)
 - **Features**: Real-time messaging, Rich text responses, Keyword-based navigation
+- **Analytics**: Built-in message tracking and user analytics
 
 ---
 
@@ -142,6 +152,27 @@ Note the HTTPS forwarding URL, e.g. `https://abcd-1234.ngrok-free.app`.
    - Get updates: `timetable`, `assignments`, `reminders`
    - Explore facilities: `hostel`, `transport`
 
+### 🤖 Optional: Advanced n8n Workflow Setup
+
+For enhanced automation and analytics:
+
+```bash
+# Quick n8n setup with Docker
+docker run -d --name n8n -p 5678:5678 -v ~/.n8n:/home/node/.n8n n8nio/n8n
+
+# Or install via npm
+npm install n8n -g
+n8n start
+```
+
+1. Open http://localhost:5678
+2. Import `n8n-workflow.json` from this project
+3. Configure WhatsApp Business API credentials
+4. Set webhook in Twilio to n8n endpoint instead of Flask
+5. Activate workflow for enhanced features
+
+📖 **Detailed Setup**: See [`QUICK_START.md`](QUICK_START.md) for complete n8n integration guide.
+
 ---
 
 ## 🚀 Deploy (Example: Railway)
@@ -215,6 +246,13 @@ curl -X POST http://localhost:5001/whatsapp --data-urlencode "Body=assignments"
 - **Student Portal**: Sync with existing student information systems
 - **Notification System**: Scheduled reminders and announcements
 - **Mobile App**: Dedicated companion app with WhatsApp integration
+- **n8n Workflow Enhancement**: Advanced automation with analytics and multi-channel support
+
+### **n8n Workflow Files**
+- 🔄 **[n8n-workflow.json](n8n-workflow.json)**: Complete workflow configuration
+- 📖 **[N8N_SETUP.md](N8N_SETUP.md)**: Comprehensive setup and configuration guide
+- ⚡ **[QUICK_START.md](QUICK_START.md)**: 5-minute quick start guide
+- 📈 **[WORKFLOW_ARCHITECTURE.md](WORKFLOW_ARCHITECTURE.md)**: Visual diagrams and architecture
 
 ---
 
